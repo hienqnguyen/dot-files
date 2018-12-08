@@ -1,8 +1,9 @@
 (require 'package)
-(add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-;;(add-to-list 'package-archives (cons "melpa-stable" (concat proto "://stable.melpa.org/packages/")) t)
+(add-to-list 'package-archives
+	     '("melpa-stable" . "http://melpa.org/packages/") t)
 
 (package-initialize)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
