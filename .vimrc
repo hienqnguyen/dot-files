@@ -16,10 +16,10 @@ Plug 'tpope/vim-endwise'          " Autocomplete end after a do
 Plug 'mileszs/ack.vim'            " Use ack in Vim
 
 " Front end stuff
-Plug 'pangloss/vim-javascript'    " JavaScript support
-Plug 'leafgarland/typescript-vim' " TypeScript syntax
-" Plug 'maxmellon/vim-jsx-pretty'   " JS and JSX syntax
-" Plug 'jparise/vim-graphql'        " GraphQL syntax
+" Plug 'pangloss/vim-javascript'
+" Plug 'leafgarland/typescript-vim'
+" Plug 'maxmellon/vim-jsx-pretty'
+" Plug 'jparise/vim-graphql'
 " Plug 'styled-components/vim-styled-components'
 
 Plug 'vim-airline/vim-airline'    " Vim powerline
@@ -30,19 +30,21 @@ Plug 'junegunn/fzf.vim'           " Set up fzf and fzf.vim
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Python stuff
-Plug 'pappasam/coc-jedi', { 'do': 'yarn install --frozen-lockfile && yarn build', 'branch': 'main' } 
+Plug 'psf/black', { 'branch': 'stable' }  " Formatter
 
-Plug 'altercation/vim-colors-solarized'
+" themes
+" Plug 'altercation/vim-colors-solarized'
 Plug 'joshdick/onedark.vim'
 Plug 'tomasiser/vim-code-dark'
 Plug 'sainnhe/vim-color-forest-night'
 Plug 'doums/darcula'
+
 Plug 'pedrohdz/vim-yaml-folds'
 Plug 'dense-analysis/ale'
 Plug 'yoheimuta/vim-protolint'
 
 " Debugger, requires vim built with python3
-" Plug 'puremourning/vimspector'
+Plug 'puremourning/vimspector'
 
 " All of your Plugins must be added before the following line
 call plug#end()              " required
@@ -63,7 +65,7 @@ let g:vimspector_enable_mappings = 'HUMAN'
 
 " -- theme
 try
-  colorscheme darcula
+  colorscheme darcula 
 catch
 endtry
 
@@ -74,13 +76,17 @@ let mapleader = " "
 let g:indentLine_char = '⦙'
 
 " Look and Feel settings
-syntax enable
+let python_highlight_all = 1
+
+syntax on
 set background=dark
 set wildmenu " when opening a file with e.g. :e ~/.vim<TAB> there is a graphical menu of all the matches
 set ttyfast
 set lazyredraw
 set updatetime=300
 " set termguicolors
+
+set hidden " turn off saving buffer prompt when switching to  another one
 
 " Numbers
 set number
@@ -133,9 +139,11 @@ nmap z za
 set noerrorbells visualbell t_vb=
 
 " Ack tricks
-let g:ackprg = 'ag --vimgrep --ignore dist --ignore node_modules --ignore coverage'
+let g:ackprg='ag --vimgrep --ignore dist --ignore node_modules --ignore coverage --ignore venv'
 nmap <leader>a :Ack! ""<Left>
 nmap <leader>A :Ack! "\b<cword>\b"<CR>
+
+set grepprg=rg\ --vimgrep\ --smart-case\ --follow
 
 " Tab Options
 set shiftwidth=2
@@ -171,7 +179,9 @@ au BufRead,BufNewFile *.md setlocal spell
 au BufRead,BufNewFile *.md.erb setlocal spell
 au BufRead,BufNewFile *.feature setlocal spell
 
-au BufNewFile,BufRead *.py set tabstop=4 expandtab softtabstop=4 shiftwidth=4  textwidth=80 fileformat=unix
+au BufNewFile,BufRead *.py set tabstop=4 expandtab softtabstop=4 shiftwidth=4  textwidth=80 expandtab autoindent fileformat=unix
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match ExtraWhitespace /\s\+$/
+
 au BufNewFile,BufRead *.ts set tabstop=2 softtabstop=2 shiftwidth=2
 " au BufNewFile,BufRead *.yml set tabstop=2 softtabstop=2 shiftwidth=2
 autocmd FileType yaml,ts,yml,json setlocal ts=2 sts=2 sw=2 expandtab shiftwidth=2
@@ -180,10 +190,13 @@ autocmd FileType yaml,ts,yml,json setlocal ts=2 sts=2 sw=2 expandtab shiftwidth=
 set backspace=indent,eol,start
 
 " +++ Shortcuts +++
+
 " Open Buffer
 nnoremap <silent><leader>l :Buffers<CR>
-" Open test file for a current file
-nnoremap <silent><leader>s :A<CR>
+" Search in side files for a current file
+nnoremap <silent><leader>s :Rg<CR>
+nnoremap <silent><Leader>g :Commits<CR>
+nnoremap <silent><Leader>h :History<CR>
 " Open test file for a current file in a vertical window
 nnoremap <silent><leader>v :AV<CR>
 " Vertically split screen
@@ -205,11 +218,12 @@ nnoremap <leader>rn :set relativenumber!<cr>
 
 " If fzf installed using git
 set rtp+=~/.fzf
-" Map fzf search to CTRL P
+" Map fzf search to CTRL+p
 nnoremap <C-p> :GFiles<Cr>
-"kMap fzf + ag search to CTRL P
+"kMap fzf + ag search to CTRL+g
 nnoremap <C-g> :Ag<Cr>
 nnoremap <C-o> :CocOutline<Cr>
+
 
 " vim-test shortcut for running tests
 nnoremap <silent><leader>; :TestNearest<CR>
@@ -225,7 +239,7 @@ nnoremap <c-k> <c-w>k
 nnoremap <c-l> <c-w>l
 
 " CoC extensions
-let g:coc_global_extensions = ['coc-tsserver', 'coc-json']
+let g:coc_global_extensions = ['coc-tsserver', 'coc-json', 'coc-pyright']
 
 nmap <leader>r <Plug>(coc-rename)
 
@@ -246,6 +260,7 @@ endif
 " using same color as PmenuSel
 autocmd CursorHold * silent call CocActionAsync('highlight')
 hi CoCHighLightText ctermfg=250 ctermbg=24 guifg=#BBBBBB guibg=#073655
+hi ExtraWhitespace ctermbg=red guibg=red
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -292,7 +307,7 @@ nmap <silent> ]g <Plug>(coc-diagnostic-next)
 let g:fugitive_pty = 0
 
 " Use <cr> to confirm completion
-" inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 " format after completion
 " inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
@@ -300,4 +315,38 @@ let g:fugitive_pty = 0
 " Navigation completion list
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+
 set rtp+=/opt/homebrew/opt/fzf
+
+function FindPopupWindowId(...)
+    let radius = get(a:000, 0, 2)
+    let srow = screenrow()
+    let scol = screencol()
+
+    " it's necessary to test entire rect, as some popup might be quite small
+    for r in range(srow - radius, srow + radius)
+        for c in range(scol - radius, scol + radius)
+            let winid = popup_locate(r, c)
+            if winid != 0
+                return winid
+            endif
+        endfor
+    endfor
+    return 0
+endfunction
+
+function ScrollPopupWindow(lines)
+    let winid = FindPopupWindowId()
+    if winid == 0
+        return 0
+    endif
+
+    let pp = popup_getpos(winid)
+    call popup_setoptions(winid, {'firstline' : pp.firstline + a:lines } )
+
+    return 1
+endfunction
+
+nnoremap <expr> <c-j> ScrollPopupWindow(2) ? '<esc>' : '<c-j>'
+nnoremap <expr> <c-k> ScrollPopupWindow(-2) ? '<esc>' : '<c-k>'
