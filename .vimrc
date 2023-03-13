@@ -1,19 +1,22 @@
-" To install Vim plugin manager
-" curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-"  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
-set nocompatible " be iMproved, required
-filetype off     " required
+" If vim-plug is not installed, install it on vim startup
+if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
 " Keep Plug commands between plug#begin() and plug#end().
 call plug#begin()
 
 Plug 'Yggdroot/indentLine'
 Plug 'airblade/vim-gitgutter'     " Show git diff of lines edited
+Plug 'mileszs/ack.vim'            " Use ack in Vim
+Plug 'tpope/vim-endwise'          " Autocomplete end after a do
 Plug 'tpope/vim-fugitive'         " :Gblame
 
-Plug 'tpope/vim-endwise'          " Autocomplete end after a do
-Plug 'mileszs/ack.vim'            " Use ack in Vim
+" Text objects
+Plug 'bps/vim-textobj-python'     " `af`/`if` - fn/inner fnc; `ac`/`ic` - class/inner class
+Plug 'kana/vim-textobj-user'
 
 " Front end stuff
 " Plug 'pangloss/vim-javascript'
@@ -22,33 +25,86 @@ Plug 'mileszs/ack.vim'            " Use ack in Vim
 " Plug 'jparise/vim-graphql'
 " Plug 'styled-components/vim-styled-components'
 
-Plug 'vim-airline/vim-airline'    " Vim powerline
-
+Plug 'dense-analysis/ale'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'           " Set up fzf and fzf.vim
-
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-
-" Python stuff
-Plug 'psf/black', { 'branch': 'stable' }  " Formatter
+Plug 'pedrohdz/vim-yaml-folds'
+Plug 'psf/black', { 'branch': 'stable' }  " Python formatter
+Plug 'puremourning/vimspector'  " Debugger, requires vim built with python3
+Plug 'vim-airline/vim-airline'    " Vim powerline
+Plug 'yoheimuta/vim-protolint'
 
 " themes
 " Plug 'altercation/vim-colors-solarized'
+" Plug 'sainnhe/vim-color-forest-night'
+Plug 'doums/darcula'
+Plug 'habamax/vim-polar'
 Plug 'joshdick/onedark.vim'
 Plug 'tomasiser/vim-code-dark'
-Plug 'sainnhe/vim-color-forest-night'
-Plug 'doums/darcula'
-
-Plug 'pedrohdz/vim-yaml-folds'
-Plug 'dense-analysis/ale'
-Plug 'yoheimuta/vim-protolint'
-
-" Debugger, requires vim built with python3
-Plug 'puremourning/vimspector'
 
 " All of your Plugins must be added before the following line
 call plug#end()              " required
+
+filetype on                  " required
 filetype plugin indent on    " required
+syntax on
+
+set autoindent
+set cindent
+set cursorcolumn
+set expandtab
+set hidden          " turn off saving buffer prompt when switching to  another one
+set hlsearch        " highlight search term
+set ignorecase      " ignore case when searching
+set incsearch       " Jumping search
+set lazyredraw
+set nobackup
+set nocompatible    " be iMproved, required
+set noswapfile
+set nowritebackup
+set number
+set relativenumber
+set showmode
+set smartcase       " When searching try to be smart about cases
+set smartindent
+set termguicolors
+set ttyfast
+set wildmenu        " when `:e ~/.vim<TAB>` there is a graphical menu of all the matches
+
+set background=dark
+set backspace=indent,eol,start      " Delete characters outside of insert area
+set clipboard=unnamed               " Allow copy and paste from system clipboard
+set cmdheight=2
+set colorcolumn=91
+set encoding=utf-8                  " Set default encoding to utf-8
+set foldlevel=99
+set foldmethod=indent
+set grepprg=rg\ --vimgrep\ --smart-case\ --follow
+set laststatus=2                    " Always show the status line
+set noerrorbells visualbell t_vb=
+set numberwidth=4
+set shiftwidth=2
+set signcolumn=yes
+set softtabstop=2                   " Number of spaces a tab counts when editing
+set tabstop=2
+set termencoding=utf-8
+set textwidth=90
+set updatetime=300
+set rtp+=/opt/homebrew/opt/fzf
+"           +--Disable hlsearch while loading viminfo
+"           | +--Remember marks for last 500 files
+"           | |    +--Remember up to 10000 lines in each register
+"           | |    |      +--Remember up to 1MB in each register
+"           | |    |      |     +--Remember last 1000 search patterns
+"           | |    |      |     |     +---Remember last 1000 commands
+"           | |    |      |     |     |
+"           v v    v      v     v     v
+set viminfo=h,'500,<10000,s1000,/1000,:1000
+
+" paste mode
+" nnoremap <F5> :set invpaste paste?<CR>
+" set pastetoggle=<F5>
 
 let g:ale_disable_lsp = 1
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
@@ -62,62 +118,19 @@ let g:ale_fixers = {
 \  'proto': ['ale#fixers#protolint#Fix'],
 \}
 let g:vimspector_enable_mappings = 'HUMAN'
+let g:fugitive_pty = 0
+let g:indentLine_char = '┊'     " thiner indent guide line '⦙'
 
-" -- theme
-try
-  colorscheme darcula 
-catch
-endtry
-
-" Leader key is SPACE, I find it the best
-let mapleader = " "
-
-" thiner indent guide line
-let g:indentLine_char = '⦙'
-
-" Look and Feel settings
+let mapleader = " "             " Leader key is SPACE, I find it the best
 let python_highlight_all = 1
 
-syntax on
-set background=dark
-set wildmenu " when opening a file with e.g. :e ~/.vim<TAB> there is a graphical menu of all the matches
-set ttyfast
-set lazyredraw
-set updatetime=300
-" set termguicolors
-
-set hidden " turn off saving buffer prompt when switching to  another one
-
-" Numbers
-set number
-set numberwidth=4
-set ruler
-
-set colorcolumn=80
-
-" paste mode
-nnoremap <F5> :set invpaste paste?<CR>
-set pastetoggle=<F5>
-set showmode
-
-set signcolumn=yes
 
 " Treat long lines as break lines
-map j gj
-map k gk
+" map j gj
+" map k gk
 
-" From https://github.com/neoclide/coc.nvim
-" Indentation
-set autoindent
-set cindent
-set smartindent
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
-
-" Give more space for displaying messages.
-set cmdheight=2
+" Enable folding with the z key
+" nmap z za
 
 " From https://github.com/mhinz/dotfiles/blob/master/.vim/vimrc
 " augroup mygroup
@@ -128,66 +141,25 @@ set cmdheight=2
   " autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 " augroup end
 
-" Enable folding
-set foldmethod=syntax
-set foldlevel=99
-
-" Enable folding with the z key
-nmap z za
-
-" Disable all bells and whistles
-set noerrorbells visualbell t_vb=
-
 " Ack tricks
 let g:ackprg='ag --vimgrep --ignore dist --ignore node_modules --ignore coverage --ignore venv'
 nmap <leader>a :Ack! ""<Left>
 nmap <leader>A :Ack! "\b<cword>\b"<CR>
 
-set grepprg=rg\ --vimgrep\ --smart-case\ --follow
-
-" Tab Options
-set shiftwidth=2
-set tabstop=2
-set softtabstop=2 " Number of spaces a tab counts when editing
-set expandtab
-
 " Delete empty space from the end of lines on every save
 " autocmd BufWritePre * :%s/\s\+$//e
-
-" Set default encoding to utf-8
-set encoding=utf-8
-set termencoding=utf-8
-
-" Disable backups and swap files
-set nobackup
-set nowritebackup
-set noswapfile
-
-set ignorecase " Ignore case when searching
-set smartcase  " When searching try to be smart about cases
-set nohlsearch " Don't highlight search term
-set incsearch  " Jumping search
-
-" Always show the status line
-set laststatus=2
-
-" Allow copy and paste from system clipboard
-set clipboard=unnamed
 
 " Spellcheck for features and markdown
 au BufRead,BufNewFile *.md setlocal spell
 au BufRead,BufNewFile *.md.erb setlocal spell
 au BufRead,BufNewFile *.feature setlocal spell
 
-au BufNewFile,BufRead *.py set tabstop=4 expandtab softtabstop=4 shiftwidth=4  textwidth=80 expandtab autoindent fileformat=unix
+au BufNewFile,BufRead *.py set tabstop=4 expandtab softtabstop=4 shiftwidth=4  expandtab autoindent fileformat=unix
 au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match ExtraWhitespace /\s\+$/
 
 au BufNewFile,BufRead *.ts set tabstop=2 softtabstop=2 shiftwidth=2
-" au BufNewFile,BufRead *.yml set tabstop=2 softtabstop=2 shiftwidth=2
+au BufNewFile,BufRead *.yml set tabstop=2 softtabstop=2 shiftwidth=2
 autocmd FileType yaml,ts,yml,json setlocal ts=2 sts=2 sw=2 expandtab shiftwidth=2
-
-" Delete characters outside of insert area
-set backspace=indent,eol,start
 
 " +++ Shortcuts +++
 
@@ -216,11 +188,10 @@ nnoremap <silent><leader>1 :source ~/.vimrc \| :PlugInstall<CR>
 " Toggle relative line numbers
 nnoremap <leader>rn :set relativenumber!<cr>
 
-" If fzf installed using git
-set rtp+=~/.fzf
+
 " Map fzf search to CTRL+p
 nnoremap <C-p> :GFiles<Cr>
-"kMap fzf + ag search to CTRL+g
+" Map fzf + ag search to CTRL+g
 nnoremap <C-g> :Ag<Cr>
 nnoremap <C-o> :CocOutline<Cr>
 
@@ -263,7 +234,7 @@ hi CoCHighLightText ctermfg=250 ctermbg=24 guifg=#BBBBBB guibg=#073655
 hi ExtraWhitespace ctermbg=red guibg=red
 
 " Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+nnoremap <silent>K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
@@ -290,6 +261,8 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 
+nmap <leader>c :CocListResume<CR>
+
 " Run the Code Lens action on the current line.
 nmap <leader>cl  <Plug>(coc-codelens-action)
 
@@ -304,7 +277,6 @@ nmap <leader>qf  <Plug>(coc-fix-current)
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
-let g:fugitive_pty = 0
 
 " Use <cr> to confirm completion
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
@@ -316,8 +288,6 @@ inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-
-set rtp+=/opt/homebrew/opt/fzf
 
 function FindPopupWindowId(...)
     let radius = get(a:000, 0, 2)
@@ -350,3 +320,9 @@ endfunction
 
 nnoremap <expr> <c-j> ScrollPopupWindow(2) ? '<esc>' : '<c-j>'
 nnoremap <expr> <c-k> ScrollPopupWindow(-2) ? '<esc>' : '<c-k>'
+
+" -- theme
+try
+  colorscheme darcula
+catch
+endtry
