@@ -13,6 +13,7 @@ Plug 'airblade/vim-gitgutter'     " Show git diff of lines edited
 Plug 'mileszs/ack.vim'            " Use ack in Vim
 Plug 'tpope/vim-endwise'          " Autocomplete end after a do
 Plug 'tpope/vim-fugitive'         " :Gblame
+Plug 'vim-test/vim-test'
 
 " Text objects
 Plug 'bps/vim-textobj-python'     " `af`/`if` - fn/inner fnc; `ac`/`ic` - class/inner class
@@ -34,6 +35,7 @@ Plug 'psf/black', { 'branch': 'stable' }  " Python formatter
 Plug 'puremourning/vimspector'  " Debugger, requires vim built with python3
 Plug 'vim-airline/vim-airline'    " Vim powerline
 Plug 'yoheimuta/vim-protolint'
+Plug 'frazrepo/vim-rainbow'
 
 " themes
 " Plug 'altercation/vim-colors-solarized'
@@ -45,6 +47,27 @@ Plug 'tomasiser/vim-code-dark'
 
 " All of your Plugins must be added before the following line
 call plug#end()              " required
+
+let g:rainbow_active = 1
+let g:ale_disable_lsp = 1
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '⚠'
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_linters = {
+\  'proto': ['protolint'],
+\}
+let g:ale_fixers = {
+\  'proto': ['ale#fixers#protolint#Fix'],
+\}
+let g:vimspector_enable_mappings = 'HUMAN'
+let g:fugitive_pty = 0
+let g:indentLine_char = '┊'     " thiner indent guide line '⦙'
+
+let mapleader = " "             " Leader key is SPACE, I find it the best
+let python_highlight_all = 1
+" Ack tricks
+let g:ackprg='ag --vimgrep --ignore dist --ignore node_modules --ignore coverage --ignore venv'
 
 filetype on                  " required
 filetype plugin indent on    " required
@@ -106,23 +129,6 @@ set viminfo=h,'500,<10000,s1000,/1000,:1000
 " nnoremap <F5> :set invpaste paste?<CR>
 " set pastetoggle=<F5>
 
-let g:ale_disable_lsp = 1
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-let g:ale_sign_error = '✘'
-let g:ale_sign_warning = '⚠'
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_linters = {
-\  'proto': ['protolint'],
-\}
-let g:ale_fixers = {
-\  'proto': ['ale#fixers#protolint#Fix'],
-\}
-let g:vimspector_enable_mappings = 'HUMAN'
-let g:fugitive_pty = 0
-let g:indentLine_char = '┊'     " thiner indent guide line '⦙'
-
-let mapleader = " "             " Leader key is SPACE, I find it the best
-let python_highlight_all = 1
 
 
 " Treat long lines as break lines
@@ -141,8 +147,6 @@ let python_highlight_all = 1
   " autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
 " augroup end
 
-" Ack tricks
-let g:ackprg='ag --vimgrep --ignore dist --ignore node_modules --ignore coverage --ignore venv'
 nmap <leader>a :Ack! ""<Left>
 nmap <leader>A :Ack! "\b<cword>\b"<CR>
 
